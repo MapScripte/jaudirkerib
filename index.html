@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <title>Кері байланыс</title>
+    <style>
+        :root {
+            --accent-pink: #ff75a0;
+            --soft-purple: #fce4ec;
+            --card-bg: #ffffff;
+            --text-dark: #4a4a4a;
+            --neon-shadow: 0 0 15px rgba(255, 117, 160, 0.3);
+            --success-pink: #ff4081;
+            --danger-red: #ff4d4d;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            /* Қыздарға арналған нәзік градиентті фон */
+            background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%);
+            background-attachment: fixed;
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            margin: 0;
+        }
+        .header-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #d81b60;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        .author {
+            font-size: 1rem;
+            color: #ad1457;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-top: 5px;
+        }
+        .feedback-card {
+            background: var(--card-bg);
+            padding: 35px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 450px;
+            border: 1px solid #f8bbd0;
+            box-shadow: 0 15px 35px rgba(216, 27, 96, 0.1);
+        }
+        label {
+            display: block;
+            margin-top: 20px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #ad1457;
+            text-transform: uppercase;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            background: #fffafa;
+            border: 1.5px solid #f8bbd0;
+            color: #333;
+            border-radius: 10px;
+            box-sizing: border-box;
+            transition: 0.3s;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent-pink);
+            box-shadow: var(--neon-shadow);
+        }
+        .star-rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            margin-top: 5px;
+        }
+        .star-rating input { display: none; }
+        .star-rating label {
+            font-size: 30px;
+            color: #f1f1f1;
+            cursor: pointer;
+            padding: 0 5px;
+            margin: 0;
+            transition: 0.2s;
+        }
+        .star-rating label:before { content: '★'; }
+        .star-rating input:checked ~ label,
+        .star-rating label:hover,
+        .star-rating label:hover ~ label {
+            color: #ffca28;
+            text-shadow: 0 0 10px rgba(255, 202, 40, 0.4);
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            margin-top: 30px;
+            background: var(--accent-pink);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.4s;
+            box-shadow: 0 4px 15px rgba(255, 117, 160, 0.4);
+        }
+        .submit-btn:hover {
+            background: #f06292;
+            transform: translateY(-2px);
+        }
+        /* Рахмет хабарламасы */
+        #thanksPopup {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #fff;
+            color: #d81b60;
+            text-align: center;
+            border-radius: 12px;
+            padding: 16px;
+            position: fixed;
+            z-index: 100;
+            bottom: 30px;
+            border: 2px solid #f8bbd0;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            font-weight: bold;
+        }
+        #thanksPopup.show {
+            visibility: visible;
+            animation: fadeInOut 3s forwards;
+        }
+        @keyframes fadeInOut {
+            0% { bottom: 0; opacity: 0; }
+            20% { bottom: 30px; opacity: 1; }
+            80% { bottom: 30px; opacity: 1; }
+            100% { bottom: 30px; opacity: 0; visibility: hidden; }
+        }
+        .reviews-list {
+            width: 100%;
+            max-width: 450px;
+            margin-top: 40px;
+        }
+        .review-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border-left: 5px solid var(--accent-pink);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .student-name { color: #880e4f; font-weight: bold; }
+        .stars-display { color: #ffca28; font-size: 0.9rem; }
+        .review-text { color: #555; line-height: 1.5; font-style: italic; }
+        .delete-btn {
+            background: #fff0f3;
+            color: #ff4d4d;
+            border: 1px solid #ffccd5;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: 0.3s;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        .delete-btn:hover {
+            background: #ff4d4d;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-section">
+        <h1>Кері байланыс</h1>
+        <div class="author">Авторы: Нұрымбетова Ж.С.</div>
+    </div>
+
+    <div class="feedback-card">
+        <label>Аты-жөніңіз</label>
+        <input type="text" id="nameInput" placeholder="Есіміңізді жазыңыз">
+        
+        <label>Пікіріңіз</label>
+        <textarea id="textInput" rows="3" placeholder="Бізбен ой бөлісіңіз..."></textarea>
+        
+        <label>Бағаңыз</label>
+        <div class="star-rating">
+            <input type="radio" name="rate" id="s5" value="5"><label for="s5"></label>
+            <input type="radio" name="rate" id="s4" value="4"><label for="s4"></label>
+            <input type="radio" name="rate" id="s3" value="3"><label for="s3"></label>
+            <input type="radio" name="rate" id="s2" value="2"><label for="s2"></label>
+            <input type="radio" name="rate" id="s1" value="1"><label for="s1"></label>
+        </div>
+
+        <button class="submit-btn" onclick="addFeedback()">Жіберу</button>
+    </div>
+
+    <div id="thanksPopup">✨ Керемет! Пікіріңізге рақмет! ✨</div>
+
+    <div class="reviews-list" id="displayArea"></div>
+
+    <script>
+        window.onload = loadReviews;
+
+        function addFeedback() {
+            const nameInput = document.getElementById('nameInput');
+            const textInput = document.getElementById('textInput');
+            const starInput = document.querySelector('input[name="rate"]:checked');
+
+            if (!nameInput.value || !textInput.value || !starInput) {
+                alert("Өтінемін, барлық жерді толтырыңыз! 🌸");
+                return;
+            }
+
+            const review = {
+                id: Date.now(),
+                name: nameInput.value,
+                text: textInput.value,
+                stars: starInput.value,
+                time: new Date().toLocaleDateString()
+            };
+
+            let storage = JSON.parse(localStorage.getItem('reviews_db')) || [];
+            storage.unshift(review);
+            localStorage.setItem('reviews_db', JSON.stringify(storage));
+
+            const popup = document.getElementById("thanksPopup");
+            popup.className = "show";
+            setTimeout(function(){ popup.className = popup.className.replace("show", ""); }, 3000);
+
+            nameInput.value = '';
+            textInput.value = '';
+            if(starInput) starInput.checked = false;
+
+            loadReviews();
+        }
+
+        function deleteReview(id) {
+            if (confirm("Бұл пікірді өшіргіңіз келе ме?")) {
+                let storage = JSON.parse(localStorage.getItem('reviews_db')) || [];
+                storage = storage.filter(review => review.id !== id);
+                localStorage.setItem('reviews_db', JSON.stringify(storage));
+                loadReviews();
+            }
+        }
+
+        function loadReviews() {
+            const area = document.getElementById('displayArea');
+            const storage = JSON.parse(localStorage.getItem('reviews_db')) || [];
+            
+            area.innerHTML = storage.length > 0 ? '<h3 style="color:#d81b60; border-bottom: 2px solid #f8bbd0; padding-bottom: 10px;">Соңғы пікірлер:</h3>' : '';
+
+            storage.forEach(item => {
+                const starsLine = '★'.repeat(item.stars) + '☆'.repeat(5 - item.stars);
+                area.innerHTML += `
+                    <div class="review-card">
+                        <div class="review-header">
+                            <span class="student-name">${item.name}</span>
+                            <span class="stars-display">${starsLine}</span>
+                        </div>
+                        <div class="review-text">"${item.text}"</div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                            <div style="font-size: 0.75rem; color: #ad1457; font-weight: 500;">${item.time}</div>
+                            <button class="delete-btn" onclick="deleteReview(${item.id})">Өшіру</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>
